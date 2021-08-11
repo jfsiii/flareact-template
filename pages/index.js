@@ -4,12 +4,11 @@ export async function getEdgeProps({ params, query, event }) {
     getPosts(),
     getUsers()
   ]);
-  const usersMap = new Map(users.map((user) => [user.id, user]))
-
+  
   return {
     props: {
       posts,
-      usersMap
+      users: users.map((user) => [user.id, user])
     },
   };
 }
@@ -27,7 +26,8 @@ async function getPosts() {
 }
 
 
-function Posts({ posts, usersMap }) {
+function Posts({ posts, users }) {
+  const usersMap = new Map(users);
   return (
     <div>
       <h1>Posts</h1>
@@ -41,9 +41,10 @@ function Posts({ posts, usersMap }) {
         {posts.map((post) => {
           const postUrl = `https://jsonplaceholder.typicode.com/posts/${post.id}`;
           const userUrl = `https://jsonplaceholder.typicode.com/users/${post.userId}`;
+          const user = usersMap.get(post.userId);
           return (
             <li key={post.id}>
-              <a href={userUrl}>{usersMap.get(post.userId).name}</a> posted "<a href={postUrl}>{post.title}</a>"
+              <a href={userUrl}>{user.name}</a> posted "<a href={postUrl}>{post.title}</a>"
             </li>
           );
         })}
@@ -51,11 +52,11 @@ function Posts({ posts, usersMap }) {
     </div>
   );
 }
-export default function Index({ posts, usersMap }) {
+export default function Index({ posts, users }) {
   return (
     <>
       <h1>You're running React on the Edge!</h1>
-      <Posts posts={posts} usersMap={usersMap} />
+      <Posts posts={posts} users={users} />
     </>
   );
 }
