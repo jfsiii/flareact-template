@@ -1,17 +1,16 @@
 import type { Post, User } from "../data";
 import type { GetEdgeProps, EdgeProps } from "../types";
 import { getPosts, getUsers } from "../data";
+import Link from "flareact/link";
 
 export interface IndexProps {
   posts: Post[];
   users: User[];
 }
 
-export async function getEdgeProps({
-  params,
-  query,
-  event,
-}: GetEdgeProps): Promise<EdgeProps<IndexProps>> {
+export async function getEdgeProps(props: GetEdgeProps): Promise<EdgeProps<IndexProps>> {
+  console.log('index', 'params' in props, 'query' in props,'event' in props)
+  const { params, query, event } = props;
   const [posts, users] = await Promise.all([getPosts(), getUsers()]);
 
   return {
@@ -35,13 +34,15 @@ function Posts({ posts, users }: IndexProps) {
       </small>
       <ul>
         {posts.map((post) => {
-          const postUrl = `https://jsonplaceholder.typicode.com/posts/${post.id}`;
+          const postUrl = `/posts/${post.id}`;
           const userUrl = `https://jsonplaceholder.typicode.com/users/${post.userId}`;
           const user = usersMap.get(post.userId);
           return (
             <li key={post.id}>
-              <a href={userUrl}>{user.name}</a> posted "
-              <a href={postUrl}>{post.title}</a>"
+              <a href={userUrl}>{user.name}</a> posted
+              <Link href="/posts/[id]" as={postUrl}>
+                <a>{post.title}</a>
+              </Link>
             </li>
           );
         })}

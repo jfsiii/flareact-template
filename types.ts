@@ -7,14 +7,15 @@ export interface FetchEvent {
   waitUntil(promise: Promise<unknown>): void;
 }
 
+type SomeObject = Record<string, unknown>
 // https://flareact.com/docs/data-fetching#fetching-data-using-code-getedgeprops-code-
-export interface GetEdgeProps {
-  params: Record<string, unknown>;
-  query: Record<string, unknown>;
+export interface GetEdgeProps<P = SomeObject, Q = SomeObject> {
+  params: P;
+  query: P & Q;
   event: FetchEvent;
 }
 
-export interface EdgeProps<P = Record<string, unknown>> {
+export interface EdgeProps<P = SomeObject> {
   props: P;
   revalidate?: number;
   notFound?: boolean;
