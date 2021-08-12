@@ -1,3 +1,4 @@
+import { getPosts, getUsers } from "../data";
 
 export async function getEdgeProps({ params, query, event }) {
   const [posts, users] = await Promise.all([
@@ -12,19 +13,6 @@ export async function getEdgeProps({ params, query, event }) {
     },
   };
 }
-
-async function getUsers() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/users");
-  const users = await res.json();
-  return users;
-}
-
-async function getPosts() {
-  const res = await fetch("https://jsonplaceholder.typicode.com/posts");
-  const posts = await res.json();
-  return posts;
-}
-
 
 function Posts({ posts, users }) {
   const usersMap = new Map(users);
