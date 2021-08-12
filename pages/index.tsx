@@ -1,21 +1,29 @@
+import type { Post, User } from "../data";
+import type { GetEdgeProps, EdgeProps } from "../types";
 import { getPosts, getUsers } from "../data";
 
-export async function getEdgeProps({ params, query, event }) {
-  const [posts, users] = await Promise.all([
-    getPosts(),
-    getUsers()
-  ]);
-  
+export interface IndexProps {
+  posts: Post[];
+  users: User[];
+}
+
+export async function getEdgeProps({
+  params,
+  query,
+  event,
+}: GetEdgeProps): Promise<EdgeProps<IndexProps>> {
+  const [posts, users] = await Promise.all([getPosts(), getUsers()]);
+
   return {
     props: {
       posts,
-      users: users.map((user) => [user.id, user])
+      users,
     },
   };
 }
 
-function Posts({ posts, users }) {
-  const usersMap = new Map(users);
+function Posts({ posts, users }: IndexProps) {
+  const usersMap = new Map(users.map((user) => [user.id, user]));
   return (
     <div>
       <h1>Posts</h1>
@@ -32,7 +40,8 @@ function Posts({ posts, users }) {
           const user = usersMap.get(post.userId);
           return (
             <li key={post.id}>
-              <a href={userUrl}>{user.name}</a> posted "<a href={postUrl}>{post.title}</a>"
+              <a href={userUrl}>{user.name}</a> posted "
+              <a href={postUrl}>{post.title}</a>"
             </li>
           );
         })}
@@ -40,7 +49,8 @@ function Posts({ posts, users }) {
     </div>
   );
 }
-export default function Index({ posts, users }) {
+
+export default function Index({ posts, users }: IndexProps) {
   return (
     <>
       <h1>You're running React on the Edge!</h1>
