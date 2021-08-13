@@ -9,7 +9,7 @@ export interface IndexProps {
 }
 
 export async function getEdgeProps(props: GetEdgeProps): Promise<EdgeProps<IndexProps>> {
-  console.log('index', 'params' in props, 'query' in props,'event' in props)
+  console.log('pages/index getEdgeProps')
   const { params, query, event } = props;
   const [posts, users] = await Promise.all([getPosts(), getUsers()]);
 
@@ -25,21 +25,23 @@ function Posts({ posts, users }: IndexProps) {
   const usersMap = new Map(users.map((user) => [user.id, user]));
   return (
     <div>
-      <h1>Posts</h1>
       <small>
-        with example API data from{" "}
+        example API data pulled from{" "}
         <a href="https://jsonplaceholder.typicode.com/">
           https://jsonplaceholder.typicode.com/
-        </a>
+        </a> in the worker and used to render HTML for the response to the browser.
       </small>
+      <h1>Posts</h1>
       <ul>
         {posts.map((post) => {
           const postUrl = `/posts/${post.id}`;
-          const userUrl = `https://jsonplaceholder.typicode.com/users/${post.userId}`;
+          const userUrl = `/users/${post.userId}`;
           const user = usersMap.get(post.userId);
           return (
             <li key={post.id}>
-              <a href={userUrl}>{user.name}</a> posted
+              <Link href="/users/[id]" as={userUrl}>
+                <a>{user.name}</a>
+              </Link> posted{" "}
               <Link href="/posts/[id]" as={postUrl}>
                 <a>{post.title}</a>
               </Link>
